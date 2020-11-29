@@ -22,6 +22,11 @@ namespace TodoListMVC.Services
 
         public FileStorageService(IWebHostEnvironment webHostEnvironment)
         {
+            if (!Directory.Exists(webHostEnvironment.WebRootPath + "\\files\\"))
+            {
+                Directory.CreateDirectory(webHostEnvironment.WebRootPath + "\\files\\");
+            }
+
             _fileFolder = Path.Combine(webHostEnvironment.WebRootPath, FILE_FOLDER_NAME);
         }
 
