@@ -10,6 +10,7 @@ using TodoListMVC.Data;
 using TodoListMVC.Data.Entities;
 using TodoListMVC.Models;
 using TodoListMVC.Services;
+using TodoListMVC.Shared;
 
 namespace TodoListMVC.Controllers
 {
@@ -23,9 +24,24 @@ namespace TodoListMVC.Controllers
             _context = context;
             _fileStorageService = fileStorageService;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(TodoStatus? todoStatusFilter,
+            DateTime? startDateFilter,
+            DateTime? endDateFilter,
+            int pageIndex = 1)
         {
-            return View(await _context.Todos.ToListAsync());
+            var todoes = _context.Todos.Where(t =>
+                    (todoStatusFilter == null || t.Status == todoStatusFilter) &&
+                    ((startDateFilter == null || endDateFilter == null) ||
+                    (startDateFilter <= t.StartDate && t.StartDate <= endDateFilter))).AsQueryable();
+
+            var page = await PaginatedList<Todo>.CreateAsync(todoes, pageIndex, 2);
+
+            var todoViewModel = new TodoViewModel {
+                Todoes = page,
+                StartDateFilter = startDateFilter,
+                EndDateFilter = endDateFilter,
+            };
+            return View(todoViewModel);
         }
         public async Task<IActionResult> Details(int? id)
         {
@@ -60,7 +76,7 @@ namespace TodoListMVC.Controllers
                     StartDate = todoSaveModel.StartDate,
                     DueDate = todoSaveModel.DueDate,
                     Scope = todoSaveModel.Scope,
-                    Status = todoSaveModel.Status,
+                    Status = TodoStatus.New
                 };
                 _context.Add(todo);
                 await _context.SaveChangesAsync();
@@ -158,7 +174,7 @@ namespace TodoListMVC.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var todo = await _context.Todos.FindAsync(id);
-            if(todo.FileName != "")
+            if(todo.FileName != null)
             {
                 await _fileStorageService.DeleteFileAsync(todo.FileName);
             }    

@@ -11,7 +11,6 @@ namespace TodoListMVC.Data.Entities
         New,
         InProgress,
         Resolved,
-        Closed,
         OverDue
     }
 

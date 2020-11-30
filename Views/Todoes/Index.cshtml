@@ -1,4 +1,5 @@
-﻿@model IEnumerable<TodoListMVC.Data.Entities.Todo>
+﻿@model TodoViewModel;
+
 
 @{
     ViewData["Title"] = "Index";
@@ -9,63 +10,92 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-controller="Todoes" asp-action="Index" method="get">
+    <div class="form-row">
+        <div class="form-group col-auto">
+            <label asp-for="TodoStatusFilter" class="control-label"></label>
+            <select asp-for="TodoStatusFilter" asp-items="Html.GetEnumSelectList<TodoStatus>()" class="form-control">
+                <option selected="selected" value="">All</option>
+            </select>
+        </div>
+
+        <div class="form-group col-auto">
+            <label asp-for="StartDateFilter" class="control-label"></label>
+            <input asp-for="StartDateFilter" class="form-control" />
+        </div>
+
+        <div class="form-group col-auto">
+            <label asp-for="EndDateFilter" class="control-label"></label>
+            <input asp-for="EndDateFilter" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Filter" class="btn btn-primary" /> | <a asp-action="Index">Back to Full List</a>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.DisplayNameFor(model => model.Todoes[0].Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FileName)
+                @Html.DisplayNameFor(model => model.Todoes[0].Content)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Content)
+                @Html.DisplayNameFor(model => model.Todoes[0].Status)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                @Html.DisplayNameFor(model => model.Todoes[0].Scope)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Scope)
+                @Html.DisplayNameFor(model => model.Todoes[0].StartDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DueDate)
+                @Html.DisplayNameFor(model => model.Todoes[0].DueDate)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FileName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Content)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Scope)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Todoes)
+        {
+            var badge = $"badge badge-{item.Status.ToColor()}";
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Content)
+                </td>
+                <td>
+                    <span class="@badge">@Html.DisplayFor(modelItem => item.Status)</span>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Scope)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DueDate)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.Todoes.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Todoes.HasNextPage ? "disabled" : "";
+}
+
+<a class="btn btn-default @prevDisabled" asp-route-pageIndex="@(Model.Todoes.PageIndex - 1)">Previous</a>
+<a class="btn btn-default @nextDisabled" asp-route-pageIndex="@(Model.Todoes.PageIndex + 1)">Next</a>
