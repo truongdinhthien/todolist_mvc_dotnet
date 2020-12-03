@@ -82,17 +82,16 @@ namespace TodoListMVC.Data.Migrations
                 name: "Assignments",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TodoId = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AssignmentDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Assignments", x => new { x.UserId, x.TodoId });
                     table.ForeignKey(
-                        name: "FK_Assignments_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Assignments_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -158,9 +157,9 @@ namespace TodoListMVC.Data.Migrations
                 column: "TodoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Assignments_UserId1",
+                name: "IX_Assignments_UserId",
                 table: "Assignments",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_TodoId",

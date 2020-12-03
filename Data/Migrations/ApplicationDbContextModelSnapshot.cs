@@ -153,7 +153,7 @@ namespace TodoListMVC.Data.Migrations
             modelBuilder.Entity("TodoListMVC.Data.Entities.Assignment", b =>
                 {
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("TodoId")
                         .HasColumnType("int");
@@ -161,14 +161,11 @@ namespace TodoListMVC.Data.Migrations
                     b.Property<DateTime>("AssignmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("UserId", "TodoId");
 
                     b.HasIndex("TodoId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Assignments");
                 });
@@ -414,7 +411,7 @@ namespace TodoListMVC.Data.Migrations
 
                     b.HasOne("TodoListMVC.Data.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Todo");
 
