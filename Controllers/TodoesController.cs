@@ -72,12 +72,15 @@ namespace TodoListMVC.Controllers
                 var todo = new Todo() {
                     Title = todoSaveModel.Title,
                     Content = todoSaveModel.Content,
-                    FileName = await _fileStorageService.SaveFileAsync(todoSaveModel.File),
                     StartDate = todoSaveModel.StartDate,
                     DueDate = todoSaveModel.DueDate,
                     Scope = todoSaveModel.Scope,
                     Status = TodoStatus.New
                 };
+                if (todoSaveModel.File != null)
+                {
+                    todo.FileName = await _fileStorageService.SaveFileAsync(todoSaveModel.File);
+                }
                 _context.Add(todo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
