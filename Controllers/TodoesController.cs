@@ -18,11 +18,13 @@ namespace TodoListMVC.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IFileStorageService _fileStorageService;
+        private readonly ICurrentUserService _currentUserService;
 
-        public TodoesController(ApplicationDbContext context, IFileStorageService fileStorageService)
+        public TodoesController(ApplicationDbContext context, IFileStorageService fileStorageService, ICurrentUserService currentUserService)
         {
             _context = context;
             _fileStorageService = fileStorageService;
+            _currentUserService = currentUserService;
         }
         public async Task<IActionResult> Index(TodoStatus? todoStatusFilter,
             DateTime? startDateFilter,
@@ -59,8 +61,15 @@ namespace TodoListMVC.Controllers
 
             return View(todo);
         }
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var listUser = await _context.Users.Distinct().ToListAsync();
+            var selectListUser = listUser.Select(u => new SelectListItem() {
+                Text = u.UserName,
+                Value = u.Id,
+            });
+            ViewBag.ListUsers = selectListUser;
+
             return View();
         }
         [HttpPost]
@@ -69,18 +78,32 @@ namespace TodoListMVC.Controllers
         {
             if (ModelState.IsValid)
             {
+                //Init todo
                 var todo = new Todo() {
                     Title = todoSaveModel.Title,
                     Content = todoSaveModel.Content,
                     StartDate = todoSaveModel.StartDate,
                     DueDate = todoSaveModel.DueDate,
                     Scope = todoSaveModel.Scope,
-                    Status = TodoStatus.New
+                    Status = TodoStatus.New,
                 };
+                //Add file
                 if (todoSaveModel.File != null)
                 {
                     todo.FileName = await _fileStorageService.SaveFileAsync(todoSaveModel.File);
                 }
+                //Add Assignment
+                var listAssignment = todoSaveModel.SelectedListUserId.Select(ele => new Assignment {
+                    UserId = ele.ToString(),
+                    AssignmentDate = DateTime.UtcNow
+                }).ToList();
+
+                listAssignment.Add(new Assignment {
+                    UserId = _currentUserService.UserId,
+                    AssignmentDate = DateTime.UtcNow,
+                });
+                todo.Assignments = listAssignment;
+
                 _context.Add(todo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

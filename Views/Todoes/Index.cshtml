@@ -14,24 +14,24 @@
 <form asp-controller="Todoes" asp-action="Index" method="get">
     <div class="form-row">
         <div class="form-group col-auto">
-            <label asp-for="TodoStatusFilter" class="control-label"></label>
+            <label asp-for="TodoStatusFilter" class="control-label"><b>Trạng thái</b></label>
             <select asp-for="TodoStatusFilter" asp-items="Html.GetEnumSelectList<TodoStatus>()" class="form-control">
                 <option selected="selected" value="">All</option>
             </select>
         </div>
 
         <div class="form-group col-auto">
-            <label asp-for="StartDateFilter" class="control-label"></label>
+            <label asp-for="StartDateFilter" class="control-label"><b>Ngày bắt đầu</b></label>
             <input asp-for="StartDateFilter" class="form-control" />
         </div>
 
         <div class="form-group col-auto">
-            <label asp-for="EndDateFilter" class="control-label"></label>
+            <label asp-for="EndDateFilter" class="control-label"><b>Ngày kết thúc</b></label>
             <input asp-for="EndDateFilter" class="form-control" />
         </div>
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Filter" class="btn btn-primary" /> | <a asp-action="Index">Back to Full List</a>
+        <div class="form-group col-auto d-flex align-items-end">
+            <input type="submit" value="Filter" class="btn btn-primary" /> | <a asp-action="Index">Back to Full List</a>
+        </div>
     </div>
 </form>
 
@@ -97,5 +97,33 @@
     var nextDisabled = !Model.Todoes.HasNextPage ? "disabled" : "";
 }
 
-<a class="btn btn-default @prevDisabled" asp-route-pageIndex="@(Model.Todoes.PageIndex - 1)">Previous</a>
-<a class="btn btn-default @nextDisabled" asp-route-pageIndex="@(Model.Todoes.PageIndex + 1)">Next</a>
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        @{
+            <li class="page-item @prevDisabled">
+                <a class="page-link" asp-route-pageIndex="@(Model.Todoes.PageIndex - 1)" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                </a>
+            </li>
+            for (int i = 1; i <= Model.Todoes.TotalPages; i++)
+            {
+                if (Model.Todoes.PageIndex == i)
+                {
+                    <li class="page-item active"><a class="page-link" asp-route-pageIndex="@i">@i</a></li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" asp-route-pageIndex="@i">@i</a></li>
+                }
+
+            }
+            <li class="page-item @nextDisabled">
+                <a class="page-link" asp-route-pageIndex="@(Model.Todoes.PageIndex + 1)" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

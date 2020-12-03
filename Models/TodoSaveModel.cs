@@ -23,6 +23,7 @@ namespace TodoListMVC.Models
         public DateTime StartDate { get; set; }
         [Required]
         public DateTime DueDate { get; set; }
+        public List<string> SelectedListUserId { get; set; }
         public IFormFile File { get; set; }
     }
 }
