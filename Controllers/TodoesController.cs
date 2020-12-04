@@ -101,7 +101,7 @@ namespace TodoListMVC.Controllers
                 listAssignment.Add(new Assignment {
                     UserId = _currentUserService.UserId,
                     AssignmentDate = DateTime.UtcNow,
-                });
+                }); // add self to todo
                 todo.Assignments = listAssignment;
 
                 _context.Add(todo);
@@ -117,13 +117,13 @@ namespace TodoListMVC.Controllers
                 return NotFound();
             }
 
-            var todo = await _context.Todos.FindAsync(id);
+            var todo = await _context.Todos.Include(t=>t.Assignments).FirstOrDefaultAsync(t => t.Id == id);
             if (todo == null)
             {
                 return NotFound();
             }
 
-            var todoSaveModle = new TodoSaveModel {
+            var todoSaveModel = new TodoSaveModel {
                 Title = todo.Title,
                 Content = todo.Content,
                 StartDate = todo.StartDate,
@@ -131,7 +131,16 @@ namespace TodoListMVC.Controllers
                 Scope = todo.Scope,
                 Status = todo.Status,
             };
-            return View(todoSaveModle);
+            //Get selectlist
+            todoSaveModel.SelectedListUserId = todo.Assignments.Select(a => a.UserId).ToList();
+            //load all
+            var listUser = await _context.Users.Distinct().ToListAsync();
+            var selectListUser = listUser.Select(u => new SelectListItem() {
+                Text = u.UserName,
+                Value = u.Id,
+            });
+            ViewBag.ListUsers = selectListUser;
+            return View(todoSaveModel);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -157,6 +166,19 @@ namespace TodoListMVC.Controllers
                     {
                         todo.FileName = await _fileStorageService.SaveFileAsync(todoSaveModel.File);
                     }
+                    var newListAssignments = todoSaveModel.SelectedListUserId.Select(ele => new Assignment {
+                        TodoId = id,
+                        UserId = ele,
+                        AssignmentDate = DateTime.UtcNow,
+                    }).ToList();
+
+                    var oldListAssignments = await _context.Assignments.Where(t => t.TodoId == id).ToListAsync();
+                    var listToRemove = oldListAssignments.Where(o => !newListAssignments.Any(n => n.UserId == o.UserId)).ToList();
+                    var listToAdd = newListAssignments.Where(o => !oldListAssignments.Any(n => n.UserId == o.UserId)).ToList();
+
+                    _context.RemoveRange(listToRemove);
+                    _context.AddRange(listToAdd);
+
                     _context.Update(todo);
                     await _context.SaveChangesAsync();
                 }
