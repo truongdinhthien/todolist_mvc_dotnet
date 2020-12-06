@@ -59,7 +59,18 @@ namespace TodoListMVC.Controllers
                 return NotFound();
             }
 
-            return View(todo);
+            var comments = _context.Comments.Where(c => c.TodoId == todo.Id).ToList();
+            var assignments = _context.Assignments.Where(a => a.TodoId == todo.Id).ToList();
+            var histories = _context.TodoHistories.Where(h => h.TodoId == todo.Id).ToList();
+            TodoDetailsModel todoDetails = new TodoDetailsModel {
+                Todo = todo,
+                Comments = comments,
+                Assignments = assignments,
+                Histories = histories
+            };
+            var view = View(todoDetails);
+            view.ViewData["user"] = _currentUserService.UserId;
+            return View(todoDetails);
         }
         public async Task<IActionResult> Create()
         {

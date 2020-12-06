@@ -1,60 +1,266 @@
-﻿@model Todo
+﻿@model TodoDetailsModel
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div><h1>Details</h1></div>
+@if (ViewData["user"].Equals(Model.Todo.CreatedBy))
+{
+    <style>
+        a {
+            float: right;
+        }
+    </style>
+}
+else
+{
+    <style>
+        a {
+            float: right;
+            display: none;
+        }
+    </style>
+}
 
 <div>
-    <h4>Todo</h4>
+    <h4>ID:@Model.Todo.Id<a asp-action="Edit" asp-route-id="@Model.Todo.Id" style="float:right">Edit</a></h4>
+    <a asp-action="Delete" asp-route-id="@Model.Todo.Id" style="float:right;font-size:25px;text-decoration:solid">Delete</a>
+    <br />
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Todo.Title)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Todo.Title)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FileName)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Todo.StartDate)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FileName)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Todo.StartDate)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Todo.DueDate)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Todo.DueDate)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
+        @*<dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.FileName)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.FileName)
+            </dd>*@
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Todo.Content)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Todo.Content)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Scope)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Todo.Status)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Scope)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Todo.Status)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Todo.Scope)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Todo.Scope)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DueDate)
+
+        @*Danh sach comment*@
+        <dt class="col-sm-2">
+            @Html.LabelFor(model => model.Comments)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DueDate)
+        <dd class="col-sm-10" style="height:300px;overflow: scroll">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="position: sticky; top: 0;">
+                            @Html.DisplayNameFor(model => model.Comments[0].Content)
+                        </th>
+                        <th style="position: sticky; top: 0;">
+                            @Html.DisplayNameFor(model => model.Comments[0].Created)
+                        </th>
+                        <th style="position: sticky; top: 0;">
+                            @Html.DisplayNameFor(model => model.Comments[0].CreatedBy)
+                        </th>
+                        <th style="position: sticky; top: 0;">
+                            @Html.DisplayNameFor(model => model.Comments[0].LastModified)
+                        </th>
+                        <th style="position: sticky; top: 0;">
+                            @Html.DisplayNameFor(model => model.Comments[0].LastModifiedBy)
+                        </th>
+                        @*<th>
+                                @Html.DisplayNameFor(model => model.Comments[0].)
+                            </th>*@
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Comments)
+                    {
+                        @*var badge = $"badge badge-{item.Status.ToColor()}";*@
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Content)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Created)
+                            </td>
+                            <td>
+                                <span @*class="@badge"*@>@Html.DisplayFor(modelItem => item.CreatedBy)</span>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LastModified)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LastModifiedBy)
+                            </td>
+                            @*<td>
+                                    @Html.DisplayFor(modelItem => item.DueDate)
+                                </td>*@
+                            @*<td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                </td>*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </dd>
+
+        @*Danh sach assignment*@
+        <dt class="col-sm-2">
+            @Html.LabelFor(model => model.Assignments)
+        </dt>
+        <dd class="col-sm-10" style="height:300px;overflow: scroll">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="position: sticky; top: 0;">
+                            @Html.DisplayNameFor(model => model.Assignments[0].UserId)
+                        </th>
+                        <th style="position: sticky; top: 0;">
+                            @Html.DisplayNameFor(model => model.Assignments[0].AssignmentDate)
+                        </th>
+                        @*<th>
+                                @Html.DisplayNameFor(model => model.Comments[0].CreatedBy)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Comments[0].LastModified)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Comments[0].LastModifiedBy)
+                            </th>*@
+                        @*<th>
+                                @Html.DisplayNameFor(model => model.Comments[0].)
+                            </th>*@
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Assignments)
+                    {
+                        @*var badge = $"badge badge-{item.Status.ToColor()}";*@
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.AssignmentDate)
+                            </td>
+                            @*<td>
+                                    <span>@Html.DisplayFor(modelItem => item.CreatedBy)</span>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LastModified)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LastModifiedBy)
+                                </td>*@
+                            @*<td>
+                                    @Html.DisplayFor(modelItem => item.DueDate)
+                                </td>*@
+                            @*<td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                </td>*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </dd>
+        @*Lich su chinh sua*@
+        <dt class="col-sm-2">
+            @Html.LabelFor(model => model.Histories)
+        </dt>
+        <dd class="col-sm-10" style="height:300px;overflow: scroll">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="position: sticky; top: 0;">
+                            @Html.DisplayNameFor(model => model.Histories[0].LogContent)
+                        </th>
+                        <th style="position: sticky; top: 0;">
+                            @Html.DisplayNameFor(model => model.Histories[0].LastModified)
+                        </th>
+                        <th style="position: sticky; top: 0;">
+                            @Html.DisplayNameFor(model => model.Histories[0].LastModifiedBy)
+                        </th>
+                        @*<th>
+                                @Html.DisplayNameFor(model => model.Comments[0].LastModified)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Comments[0].LastModifiedBy)
+                            </th>*@
+                        @*<th>
+                                @Html.DisplayNameFor(model => model.Comments[0].)
+                            </th>*@
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Histories)
+                    {
+                        @*var badge = $"badge badge-{item.Status.ToColor()}";*@
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LogContent)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LastModified)
+                            </td>
+                            <td>
+                                <span>@Html.DisplayFor(modelItem => item.LastModifiedBy)</span>
+                            </td>
+                            @*<td>
+                                    @Html.DisplayFor(modelItem => item.LastModified)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LastModifiedBy)
+                                </td>*@
+                            @*<td>
+                                    @Html.DisplayFor(modelItem => item.DueDate)
+                                </td>*@
+                            @*<td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                </td>*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
