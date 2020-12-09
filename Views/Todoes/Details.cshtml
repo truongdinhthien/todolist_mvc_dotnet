@@ -5,27 +5,26 @@
 }
 
 <div><h1>Details</h1></div>
-@if (ViewData["user"].Equals(Model.Todo.CreatedBy))
+@if (Model.Todo.CreatedBy != null && ViewData["user"] != null && ViewData["user"].Equals(Model.Todo.CreatedBy))
 {
     <style>
-        a {
-            float: right;
+        .checkRight {
         }
     </style>
 }
 else
 {
     <style>
-        a {
-            float: right;
+        .checkRight {
             display: none;
         }
     </style>
 }
 
+
 <div>
-    <h4>ID:@Model.Todo.Id<a asp-action="Edit" asp-route-id="@Model.Todo.Id" style="float:right">Edit</a></h4>
-    <a asp-action="Delete" asp-route-id="@Model.Todo.Id" style="float:right;font-size:25px;text-decoration:solid">Delete</a>
+    <h4>ID:@Model.Todo.Id<a asp-action="Edit" asp-route-id="@Model.Todo.Id" style="float:right" class="checkRight">Edit</a></h4>
+    <a asp-action="Delete" asp-route-id="@Model.Todo.Id" style="float:right;font-size:25px;text-decoration:solid" class="checkRight">Delete</a>
     <br />
     <hr />
     <dl class="row">
@@ -47,12 +46,6 @@ else
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Todo.DueDate)
         </dd>
-        @*<dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.FileName)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.FileName)
-            </dd>*@
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Todo.Content)
         </dt>
@@ -95,16 +88,15 @@ else
                         <th style="position: sticky; top: 0;">
                             @Html.DisplayNameFor(model => model.Comments[0].LastModifiedBy)
                         </th>
-                        @*<th>
-                                @Html.DisplayNameFor(model => model.Comments[0].)
-                            </th>*@
+                        <th style="position: sticky; top: 0;">
+                            <a asp-action="CreateComment" asp-route-id="@Model.Todo.Id">Thêm bình luận</a>
+                        </th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model.Comments)
                     {
-                        @*var badge = $"badge badge-{item.Status.ToColor()}";*@
                         <tr>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Content)
@@ -113,7 +105,7 @@ else
                                 @Html.DisplayFor(modelItem => item.Created)
                             </td>
                             <td>
-                                <span @*class="@badge"*@>@Html.DisplayFor(modelItem => item.CreatedBy)</span>
+                                <span>@Html.DisplayFor(modelItem => item.CreatedBy)</span>
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.LastModified)
@@ -121,14 +113,18 @@ else
                             <td>
                                 @Html.DisplayFor(modelItem => item.LastModifiedBy)
                             </td>
-                            @*<td>
-                                    @Html.DisplayFor(modelItem => item.DueDate)
-                                </td>*@
-                            @*<td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                                </td>*@
+                            <td>
+                                @if (item.TodoId == Model.Todo.Id)
+                                {
+                                    <a asp-action="EditComment" asp-route-id="@item.Id">Edit</a>
+                                    <a asp-action="DeleteComment" asp-route-id="@item.Id">Delete</a>
+                                }
+                                else
+                                {
+
+                                }
+
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -149,25 +145,12 @@ else
                         <th style="position: sticky; top: 0;">
                             @Html.DisplayNameFor(model => model.Assignments[0].AssignmentDate)
                         </th>
-                        @*<th>
-                                @Html.DisplayNameFor(model => model.Comments[0].CreatedBy)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Comments[0].LastModified)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Comments[0].LastModifiedBy)
-                            </th>*@
-                        @*<th>
-                                @Html.DisplayNameFor(model => model.Comments[0].)
-                            </th>*@
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model.Assignments)
                     {
-                        @*var badge = $"badge badge-{item.Status.ToColor()}";*@
                         <tr>
                             <td>
                                 @Html.DisplayFor(modelItem => item.UserId)
@@ -175,23 +158,6 @@ else
                             <td>
                                 @Html.DisplayFor(modelItem => item.AssignmentDate)
                             </td>
-                            @*<td>
-                                    <span>@Html.DisplayFor(modelItem => item.CreatedBy)</span>
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.LastModified)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.LastModifiedBy)
-                                </td>*@
-                            @*<td>
-                                    @Html.DisplayFor(modelItem => item.DueDate)
-                                </td>*@
-                            @*<td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                                </td>*@
                         </tr>
                     }
                 </tbody>
@@ -214,22 +180,12 @@ else
                         <th style="position: sticky; top: 0;">
                             @Html.DisplayNameFor(model => model.Histories[0].LastModifiedBy)
                         </th>
-                        @*<th>
-                                @Html.DisplayNameFor(model => model.Comments[0].LastModified)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Comments[0].LastModifiedBy)
-                            </th>*@
-                        @*<th>
-                                @Html.DisplayNameFor(model => model.Comments[0].)
-                            </th>*@
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model.Histories)
                     {
-                        @*var badge = $"badge badge-{item.Status.ToColor()}";*@
                         <tr>
                             <td>
                                 @Html.DisplayFor(modelItem => item.LogContent)
@@ -240,20 +196,6 @@ else
                             <td>
                                 <span>@Html.DisplayFor(modelItem => item.LastModifiedBy)</span>
                             </td>
-                            @*<td>
-                                    @Html.DisplayFor(modelItem => item.LastModified)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.LastModifiedBy)
-                                </td>*@
-                            @*<td>
-                                    @Html.DisplayFor(modelItem => item.DueDate)
-                                </td>*@
-                            @*<td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                                </td>*@
                         </tr>
                     }
                 </tbody>

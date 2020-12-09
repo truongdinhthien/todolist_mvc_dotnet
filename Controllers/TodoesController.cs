@@ -83,6 +83,41 @@ namespace TodoListMVC.Controllers
 
             return View();
         }
+        public async Task<IActionResult> CreateComment(int? id)
+        {
+            var todos =  _context.Todos.Select(t => new SelectListItem() {
+                Text = t.Title,
+                Value = t.Id.ToString(),
+            }).ToList();
+            Comment defaultComment = new Comment() {
+                Id = 0,
+                TodoId = id.Value,
+                Created = DateTime.Now
+            };
+            ViewBag.ListTodos = todos;
+            return View(defaultComment);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateComment(Comment cm)
+        {
+            if (ModelState.IsValid)
+            {
+                //Init todo
+                var comment = new Comment() {
+                    TodoId = cm.TodoId,
+                    Content = cm.Content,
+                    Created = DateTime.Now,
+                    CreatedBy = _currentUserService.UserId,
+                    LastModified = DateTime.Now,
+                    LastModifiedBy = _currentUserService.UserId,
+                };
+                _context.Add(comment);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(cm);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TodoSaveModel todoSaveModel)
@@ -97,6 +132,10 @@ namespace TodoListMVC.Controllers
                     DueDate = todoSaveModel.DueDate,
                     Scope = todoSaveModel.Scope,
                     Status = TodoStatus.New,
+                    Created = DateTime.Now,
+                    CreatedBy = _currentUserService.UserId,
+                    LastModified = DateTime.Now,
+                    LastModifiedBy = _currentUserService.UserId,
                 };
                 //Add file
                 if (todoSaveModel.File != null)
@@ -120,6 +159,82 @@ namespace TodoListMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(todoSaveModel);
+        }
+        public async Task<IActionResult> EditComment(int? id)
+        {
+            var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
+            var todolist = await _context.Todos.Distinct().ToListAsync();
+            ViewBag.ListTodos = todolist.Select(t => new SelectListItem() {
+                Text = t.Title,
+                Value = t.Id.ToString(),
+            });
+            return View(comment);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditComment(int id, [FromForm] Comment comment)
+        {
+            if (id != comment.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var cm = await _context.Comments.FindAsync(id);
+                    cm.TodoId = comment.TodoId;
+                    cm.Content = comment.Content;
+                    cm.LastModified = comment.LastModified;
+                    cm.LastModifiedBy = comment.LastModifiedBy;
+                    cm.Created = comment.Created;
+                    cm.CreatedBy = comment.CreatedBy;
+                    _context.Update(cm);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!TodoExists(comment.TodoId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Details));
+            }
+            return View(comment);
+        }
+        public async Task<IActionResult> DeleteComment(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var comment = await _context.Comments
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return View(comment);
+        }
+
+        // POST: Todoes/Delete/5
+        [HttpPost, ActionName("DeleteComment")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCommentConfirmed(int id)
+        {
+            var comment = await _context.Comments.FindAsync(id);
+            _context.Comments.Remove(comment);
+            await _context.SaveChangesAsync();
+            //return RedirectToAction(nameof(Details));
+            return RedirectToAction(nameof(Details), new { id = comment.TodoId} );
         }
         public async Task<IActionResult> Edit(int? id)
         {
