@@ -37,7 +37,7 @@
             </span>
             <br />
 
-            @if (DateTime.Now > Model.DueDate)
+            @if (DateTime.Now > Model.DueDate && Model.Status != TodoStatus.Resolved)
             {
                 <span class="badge badge-danger">Quá hạn</span>
                 <mark class="text-danger font-weight-bold">@Model.DueDate</mark>
