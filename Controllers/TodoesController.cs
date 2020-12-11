@@ -11,6 +11,7 @@ using TodoListMVC.Data.Entities;
 using TodoListMVC.Models;
 using TodoListMVC.Services;
 using TodoListMVC.Shared;
+using TodoListMVC.Extensions;
 
 namespace TodoListMVC.Controllers
 {
@@ -143,10 +144,14 @@ namespace TodoListMVC.Controllers
                     todo.FileName = await _fileStorageService.SaveFileAsync(todoSaveModel.File);
                 }
                 //Add Assignment
-                var listAssignment = todoSaveModel.SelectedListUserId.Select(ele => new Assignment {
-                    UserId = ele.ToString(),
-                    AssignmentDate = DateTime.UtcNow
-                }).ToList();
+                var listAssignment = new List<Assignment>();
+                if (todoSaveModel.SelectedListUserId != null)
+                {
+                    listAssignment = todoSaveModel.SelectedListUserId.Select(ele => new Assignment {
+                        UserId = ele.ToString(),
+                        AssignmentDate = DateTime.UtcNow
+                    }).ToList();
+                }    
 
                 listAssignment.Add(new Assignment {
                     UserId = _currentUserService.UserId,
@@ -155,7 +160,18 @@ namespace TodoListMVC.Controllers
                 todo.Assignments = listAssignment;
 
                 _context.Add(todo);
-                await _context.SaveChangesAsync();
+                var successCreateTodo = await _context.SaveChangesAsync() > 0;
+                if(successCreateTodo)
+                {
+                    //Get user entity
+                    //var currentUser = await _context.Users.FindAsync(_currentUserService.UserId);
+                    var todoHistory = new TodoHistory {
+                        TodoId = todo.Id,
+                        LogContent = $"Khởi tạo công việc",
+                    };
+                    _context.Add(todoHistory);
+                    await _context.SaveChangesAsync();
+                }    
                 return RedirectToAction(nameof(Index));
             }
             return View(todoSaveModel);
@@ -282,6 +298,7 @@ namespace TodoListMVC.Controllers
                 try
                 {
                     var todo = await _context.Todos.FindAsync(id);
+                    var oldTodo = await _context.Todos.AsNoTracking().Where(t => t.Id == id).FirstOrDefaultAsync();
                     todo.Title = todoSaveModel.Title;
                     todo.Content = todoSaveModel.Content;
                     todo.StartDate = todoSaveModel.StartDate;
@@ -306,7 +323,61 @@ namespace TodoListMVC.Controllers
                     _context.AddRange(listToAdd);
 
                     _context.Update(todo);
-                    await _context.SaveChangesAsync();
+                    var successUpdateTodo = await _context.SaveChangesAsync() > 0;
+                    if (successUpdateTodo)
+                    {
+                        //Get user entity
+                        //var currentUser = await _context.Users.FindAsync(_currentUserService.UserId);
+                        var LogContent = "";
+
+                        if(todo.Title != oldTodo.Title)
+                        {
+                            LogContent += $"+ Sửa tiêu để từ {oldTodo.Title} thành {todo.Title} \n";
+                        }
+                        if (todo.Content != oldTodo.Content)
+                        {
+                            LogContent += $"+ Sửa nội dung từ {oldTodo.Content} thành {todo.Content} \n";
+                        }
+
+                        if (todo.Status != oldTodo.Status)
+                        {
+                            LogContent += $"+ Sửa trạng thái từ {oldTodo.Status} thành {todo.Status} \n";
+                        }
+
+                        if (todo.FileName != oldTodo.FileName)
+                        {
+                            LogContent += $"+ Sửa file từ {oldTodo.FileName} thành {todo.FileName} \n";
+                        }
+
+                        if (todo.StartDate != oldTodo.StartDate)
+                        {
+                            LogContent += $"+ Sửa thời gian bắt đầu từ {oldTodo.StartDate} thành {todo.StartDate} \n";
+                        }
+
+                        if (todo.DueDate != oldTodo.DueDate)
+                        {
+                            LogContent += $"+ Sửa thời gian kết thúc từ {oldTodo.DueDate} thành {todo.DueDate} \n";
+                        }
+
+                        var newAssignmentUserString = await newListAssignments.ToUserStringAsync(_context);
+                        var oldAssignmentUserString = await oldListAssignments.ToUserStringAsync(_context);
+
+                        if(newAssignmentUserString != oldAssignmentUserString)
+                        {
+                            LogContent += $"+ Sửa thành viên từ {oldAssignmentUserString} thành {newAssignmentUserString} \n";
+                        }
+
+                        if (LogContent != "")
+                        {
+                            var todoHistory = new TodoHistory {
+                                TodoId = todo.Id,
+                                LogContent = LogContent,
+                            };
+                            _context.Add(todoHistory);
+                            await _context.SaveChangesAsync();
+                        }                            
+
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
