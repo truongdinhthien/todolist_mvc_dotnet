@@ -11,9 +11,9 @@ namespace TodoListMVC.Models
     public class TodoDetailsModel
     {
         public Todo Todo { get; set; }
-        [Display(Name = "Danh sách bình luận")]
+        [Display(Name = "Bình luận")]
         public List<Comment> Comments { get; set; }
-        [Display(Name = "Danh sách thành viên")]
+        [Display(Name = "Thành viên")]
         public List<Assignment> Assignments { get; set; }
         [Display(Name = "Lịch sử chỉnh sửa")]
         public List<TodoHistory> Histories { get; set; }
