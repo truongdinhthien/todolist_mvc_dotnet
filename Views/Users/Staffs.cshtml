@@ -1,0 +1,131 @@
+﻿@model UserViewModel;
+
+<p>
+    <a asp-action="CreateStaff">Thêm nhân viên</a>
+</p>
+
+<h1>Quản lý nhân viên</h1>
+
+<form asp-controller="Users" asp-action="Staffs" method="get">
+    <div class="form-row">
+        <div class="form-group col-auto">
+            <label asp-for="Email" class="control-label"><b>Email</b></label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+
+        <div class="form-group col-auto">
+            <label asp-for="LastName" class="control-label"><b>Họ</b></label>
+            <input asp-for="LastName" class="form-control" />
+        </div>
+
+        <div class="form-group col-auto">
+            <label asp-for="FirstName" class="control-label"><b>Tên</b></label>
+            <input asp-for="FirstName" class="form-control" />
+        </div>
+        <div class="form-group col-auto d-flex align-items-end">
+            <input type="submit" value="Tìm" class="btn btn-primary" /> | <a asp-action="Staffs">Bỏ lọc</a>
+        </div>
+    </div>
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Users[0].Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Users[0].LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Users[0].FirstName)
+            </th>
+            <th>
+                Số điện thoại
+            </th>
+            <th>
+                Trạng thái
+            </th>
+            <th colspan="2">
+                Thao tác
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.PhoneNumber)
+                </td>
+                <td>
+                    @(user.LockoutEnd == null ? Html.Raw("<span class=\"badge badge-success\">Hoạt động</span>") : Html.Raw("<span class=\"badge badge-danger\">Bị khóa</span>"))
+                </td>
+                <td>
+                    @if (user.LockoutEnd == null)
+                    {
+                        @using (Html.BeginForm("LockStaff", "Users", new { id = user.Id }))
+                        {
+                            <button class="btn btn-outline-danger btn-sm" type="submit">Khóa</button>
+                        }
+                    }
+                    else
+                    {
+                        @using (Html.BeginForm("UnLockStaff", "Users", new { id = user.Id }))
+                        {
+                            <button class="btn btn-outline-success btn-sm" type="submit">Mở Khóa</button>
+                        }
+                    }
+                </td>
+                <td>
+                    <a asp-action="EditStaff" asp-route-id="@user.Id">Sửa</a> |
+                    <a asp-action="DetailStaff" asp-route-id="@user.Id">Chi tiết</a> |
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@{ var prevDisabled = !Model.Users.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Users.HasNextPage ? "disabled" : ""; }
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        @{
+            <li class="page-item @prevDisabled">
+                <a class="page-link" asp-route-pageIndex="@(Model.Users.PageIndex - 1)" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                </a>
+            </li>
+            for (int i = 1; i <= Model.Users.TotalPages; i++)
+            {
+                if (Model.Users.PageIndex == i)
+                {
+                    <li class="page-item active"><a class="page-link" asp-route-pageIndex="@i">@i</a></li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" asp-route-pageIndex="@i">@i</a></li>
+                }
+
+            }
+            <li class="page-item @nextDisabled">
+                <a class="page-link" asp-route-pageIndex="@(Model.Users.PageIndex + 1)" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

@@ -1,0 +1,41 @@
+﻿@model TodoListMVC.Data.Entities.User
+
+<div>
+    <h4>Thông tin</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+        <dt class="col-sm-2">
+            Số điện thoại
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+        <dt class="col-sm-2">
+            Trạng thái
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.LockoutEnd == null ? Html.Raw("<span class=\"badge badge-success\">Hoạt động</span>") : Html.Raw("<span class=\"badge badge-danger\">Bị khóa</span>"))
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Staffs">Quay lại danh sách</a>
+</div>
