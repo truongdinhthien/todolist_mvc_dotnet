@@ -12,15 +12,17 @@ using TodoListMVC.Models;
 using TodoListMVC.Services;
 using TodoListMVC.Shared;
 using TodoListMVC.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TodoListMVC.Controllers
 {
+    [Authorize]
     public class TodoesController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IFileStorageService _fileStorageService;
         private readonly ICurrentUserService _currentUserService;
-
+        
         public TodoesController(ApplicationDbContext context, IFileStorageService fileStorageService, ICurrentUserService currentUserService)
         {
             _context = context;
