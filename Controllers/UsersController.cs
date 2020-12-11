@@ -282,7 +282,8 @@ namespace TodoListMVC.Controllers
 
             return RedirectToAction(nameof(Leaders));
         }
-
+        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> DetailStaff(string id)
         {
             if (id == null)
@@ -304,7 +305,8 @@ namespace TodoListMVC.Controllers
 
             return View(user);
         }
-
+        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> DetailLeader(string id)
         {
             if (id == null)

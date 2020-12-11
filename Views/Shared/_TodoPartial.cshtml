@@ -1,5 +1,8 @@
 ﻿@model Todo
-
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims;
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 @{
     var style = "card mb-4 ";
 
@@ -17,7 +20,6 @@
     .card:hover .hidden {
         display: inline;
     }
-
 </style>
 
 <div class="@style">
@@ -43,7 +45,10 @@
             <span>
                 Tạo bởi
                 <a asp-controller="" asp-action="" asp-route-id="@Model.CreatedBy">
-                    @Model.CreatedBy
+                    @{
+                        var user = await UserManager.FindByIdAsync(@Model.CreatedBy);
+                        @user?.UserName
+                    }
                 </a>
             </span>
 
@@ -66,15 +71,15 @@
         </small>
 
         @*<div class="align">
-            <a class="btn btn-outline-info btn-sm" asp-controller="Todoes" asp-action="Details" asp-route-id="@item.Id">
-                <i class="far fa-eye"></i> Details
-            </a>
-            <a class="btn btn-outline-warning btn-sm" asp-controller="Todoes" asp-action="Edit" asp-route-id="@item.Id">
-                <i class="far fa-edit"></i> Edit
-            </a>
-            <a class="btn btn-outline-danger btn-sm" asp-controller="Todoes" asp-action="Delete" asp-route-id="@item.Id">
-                <i class="far fa-trash-alt"></i> Delete
-            </a>
-        </div>*@
+                <a class="btn btn-outline-info btn-sm" asp-controller="Todoes" asp-action="Details" asp-route-id="@item.Id">
+                    <i class="far fa-eye"></i> Details
+                </a>
+                <a class="btn btn-outline-warning btn-sm" asp-controller="Todoes" asp-action="Edit" asp-route-id="@item.Id">
+                    <i class="far fa-edit"></i> Edit
+                </a>
+                <a class="btn btn-outline-danger btn-sm" asp-controller="Todoes" asp-action="Delete" asp-route-id="@item.Id">
+                    <i class="far fa-trash-alt"></i> Delete
+                </a>
+            </div>*@
     </div>
 </div>
