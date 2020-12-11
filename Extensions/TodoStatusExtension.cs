@@ -19,6 +19,16 @@ namespace TodoListMVC.Extensions
             }
             return string.Empty;
         }
+
+        public static string ToColor(this TodoScope todoScoprs)
+        {
+            switch (todoScoprs)
+            {
+                case TodoScope.Public: return "success";
+                case TodoScope.Private: return "danger";
+            }
+            return string.Empty;
+        }
     }
 }
 

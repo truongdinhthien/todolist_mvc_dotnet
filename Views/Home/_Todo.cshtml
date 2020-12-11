@@ -1,0 +1,64 @@
+﻿@model Todo
+
+@{
+    var style = "card mb-4 rounded";
+
+    if (Model.Status == TodoStatus.Resolved) style += "";
+    if (Model.Status == TodoStatus.New) style += "shadow-sm border border-primary";
+    if (Model.Status == TodoStatus.InProgress) style += "shadow-sm border border-warning";
+    //if (Model.Status == TodoStatus.OverDue) style += "shadow-sm border border-danger";
+}
+
+<div class="@style">
+    <div class="card-body">
+        <div>
+            <span class="badge badge-@Model.Status.ToColor()">
+                @Model.Status
+            </span>
+            <span class="badge badge-light text-@Model.Scope.ToColor()">
+                @Model.Scope
+            </span>
+        </div>
+
+        <a class="card-title lead font-weight-bold" asp-controller="Todoes" asp-action="Details" asp-route-id="@Model.Id">
+            @Model.Title
+        </a>
+
+        <p class="card-text">
+            @Model.Content
+        </p>
+
+        <small>
+            <span>
+                Tạo bởi
+                <a asp-controller="" asp-action="" asp-route-id="@Model.CreatedBy">
+                    @Model.CreatedBy
+                </a>
+            </span>
+            <br />
+
+            @if (DateTime.Now > Model.DueDate)
+            {
+                <span class="badge badge-danger">Quá hạn</span>
+                <mark class="text-danger font-weight-bold">@Model.DueDate</mark>
+            }
+            else
+            {
+                <span>Hạn</span>
+                <mark>@Model.DueDate</mark>
+            }
+        </small>
+
+        @*<div class="align">
+            <a class="btn btn-outline-info btn-sm" asp-controller="Todoes" asp-action="Details" asp-route-id="@item.Id">
+                <i class="far fa-eye"></i> Details
+            </a>
+            <a class="btn btn-outline-warning btn-sm" asp-controller="Todoes" asp-action="Edit" asp-route-id="@item.Id">
+                <i class="far fa-edit"></i> Edit
+            </a>
+            <a class="btn btn-outline-danger btn-sm" asp-controller="Todoes" asp-action="Delete" asp-route-id="@item.Id">
+                <i class="far fa-trash-alt"></i> Delete
+            </a>
+        </div>*@
+    </div>
+</div>

@@ -4,178 +4,43 @@
     ViewData["Title"] = "Home Page";
 }
 
-<h1>Home page</h1>
+<h1>Trang chủ</h1>
 
-<p>My Todoes</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(data => data.PrivateTodoes[0].Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrivateTodoes[0].Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrivateTodoes[0].Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrivateTodoes[0].Scope)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrivateTodoes[0].StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrivateTodoes[0].DueDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+<hr />
+
+<div class="row">
+
+    <div class="col-sm">
+        <p class="lead font-weight-bold align-content-center">
+            <i class="fas fa-user"></i> My Todoes
+        </p>
+
         @foreach (var item in Model.PrivateTodoes)
         {
-            var badge = $"badge badge-{item.Status.ToColor()}";
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Content)
-                </td>
-                <td>
-                    <span class="@badge">@Html.DisplayFor(modelItem => item.Status)</span>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Scope)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DueDate)
-                </td>
-                <td>
-                    <a asp-controller="Todoes" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-controller="Todoes" asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-controller="Todoes" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
+            <partial name="_Todo" model="item" />
         }
-    </tbody>
-</table>
+    </div>
 
-<hr />
+    <div class="col-sm">
+        <p class="lead font-weight-bold align-content-center">
+            <i class="fas fa-users"></i> Assigned Todoes
+        </p>
 
-<p>Assigned Todoes</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(data => data.AssignedTodoes[0].Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedTodoes[0].Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedTodoes[0].Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedTodoes[0].Scope)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedTodoes[0].StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedTodoes[0].DueDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
         @foreach (var item in Model.AssignedTodoes)
         {
-            var badge = $"badge badge-{item.Status.ToColor()}";
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Content)
-                </td>
-                <td>
-                    <span class="@badge">@Html.DisplayFor(modelItem => item.Status)</span>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Scope)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DueDate)
-                </td>
-                <td>
-                    <a asp-controller="Todoes" asp-action="Details" asp-route-id="@item.Id">Details</a>
-                </td>
-            </tr>
+            <partial name="_Todo" model="item" />
         }
-    </tbody>
-</table>
+    </div>
 
-<hr />
+    <div class="col-sm">
+        <p class="lead font-weight-bold align-content-center">
+            <i class="fas fa-globe-asia"></i> Public Todoes
+        </p>
 
-<p>Public Todoes</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(data => data.PublicTodoes[0].Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PublicTodoes[0].Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PublicTodoes[0].Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PublicTodoes[0].Scope)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PublicTodoes[0].StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PublicTodoes[0].DueDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
         @foreach (var item in Model.PublicTodoes)
         {
-            var badge = $"badge badge-{item.Status.ToColor()}";
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Content)
-                </td>
-                <td>
-                    <span class="@badge">@Html.DisplayFor(modelItem => item.Status)</span>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Scope)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DueDate)
-                </td>
-                <td>
-                    <a asp-controller="Todoes" asp-action="Details" asp-route-id="@item.Id">Details</a>
-                </td>
-            </tr>
+            <partial name="_Todo" model="item" />
         }
-    </tbody>
-</table>
+    </div>
+
+</div>
