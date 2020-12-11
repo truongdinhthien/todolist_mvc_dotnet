@@ -5,10 +5,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Danh sách công việc</h1>
+
+<hr />
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-outline-primary" asp-action="Create">
+        <i class="fas fa-plus-square"></i> Tạo mới
+    </a>
 </p>
 
 <form asp-controller="Todoes" asp-action="Index" method="get">
@@ -30,67 +34,22 @@
             <input asp-for="EndDateFilter" class="form-control" />
         </div>
         <div class="form-group col-auto d-flex align-items-end">
-            <input type="submit" value="Filter" class="btn btn-primary" /> | <a asp-action="Index">Back to Full List</a>
+            <button type="submit" class="btn btn-outline-success">
+                <i class="fas fa-filter"></i> Lọc
+            </button>
+            <a class="btn btn-outline-primary ml-2" asp-action="Index">
+                <i class="fas fa-undo-alt"></i> Đặt lại bộ lọc
+            </a>
         </div>
     </div>
 </form>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Todoes[0].Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Todoes[0].Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Todoes[0].Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Todoes[0].Scope)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Todoes[0].StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Todoes[0].DueDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Todoes)
-        {
-            var badge = $"badge badge-{item.Status.ToColor()}";
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Content)
-                </td>
-                <td>
-                    <span class="@badge">@Html.DisplayFor(modelItem => item.Status)</span>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Scope)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DueDate)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+@foreach (var item in Model.Todoes)
+{
+    <partial name="_TodoPartial" model="item" />
+}
+
 
 @{
     var prevDisabled = !Model.Todoes.HasPreviousPage ? "disabled" : "";
