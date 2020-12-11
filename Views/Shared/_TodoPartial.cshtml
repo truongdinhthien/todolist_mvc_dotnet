@@ -9,6 +9,17 @@
     //if (Model.Status == TodoStatus.OverDue) style += "shadow-sm border border-danger";
 }
 
+<style>
+    .card .hidden {
+        display: none;
+    }
+
+    .card:hover .hidden {
+        display: inline;
+    }
+
+</style>
+
 <div class="@style">
     <div class="card-body">
         <div>
@@ -35,6 +46,11 @@
                     @Model.CreatedBy
                 </a>
             </span>
+
+            <span class="hidden">
+                lúc <mark>@Model.Created</mark> <br />
+                Bắt đầu: <mark>@Model.StartDate</mark>
+            </span>
             <br />
 
             @if (DateTime.Now > Model.DueDate && Model.Status != TodoStatus.Resolved)
@@ -44,7 +60,7 @@
             }
             else
             {
-                <span>Hạn</span>
+                <span>Hạn: </span>
                 <mark>@Model.DueDate</mark>
             }
         </small>

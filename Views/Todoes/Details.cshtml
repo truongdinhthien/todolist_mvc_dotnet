@@ -4,205 +4,242 @@
     ViewData["Title"] = "Details";
 }
 
-<div><h1>Details</h1></div>
+<style>
+    /*https://bootsnipp.com/snippets/xrKXW*/
+    ul.timeline {
+        list-style-type: none;
+        position: relative;
+    }
+
+        ul.timeline:before {
+            content: ' ';
+            background: #d4d9df;
+            display: inline-block;
+            position: absolute;
+            left: 29px;
+            width: 2px;
+            height: 100%;
+            z-index: 400;
+        }
+
+        ul.timeline > li {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+
+            ul.timeline > li:before {
+                content: ' ';
+                background: white;
+                display: inline-block;
+                position: absolute;
+                border-radius: 50%;
+                border: 3px solid #22c0e8;
+                left: 20px;
+                width: 20px;
+                height: 20px;
+                z-index: 400;
+            }
+</style>
+
+
+<div><h1>Chi tiết công việc</h1></div>
+
+<hr />
+<h3>Thông tin</h3>
+
+<partial name="_TodoPartial" model="Model.Todo" />
+
 @if (Model.Todo.CreatedBy != null && ViewData["user"] != null && ViewData["user"].Equals(Model.Todo.CreatedBy))
 {
-    <style>
-        .checkRight {
-        }
-    </style>
-}
-else
-{
-    <style>
-        .checkRight {
-            display: none;
-        }
-    </style>
+    <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Todo.Id">
+        <i class="fas fa-pencil-alt"></i> Sửa
+    </a>
+    <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Todo.Id">
+        <i class="fas fa-trash-alt"></i> Xóa
+    </a>
 }
 
-
-<div>
-    <h4>ID:@Model.Todo.Id<a asp-action="Edit" asp-route-id="@Model.Todo.Id" style="float:right" class="checkRight">Edit</a></h4>
-    <a asp-action="Delete" asp-route-id="@Model.Todo.Id" style="float:right;font-size:25px;text-decoration:solid" class="checkRight">Delete</a>
-    <br />
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Todo.Title)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Todo.Title)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Todo.StartDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Todo.StartDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Todo.DueDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Todo.DueDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Todo.Content)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Todo.Content)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Todo.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Todo.Status)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Todo.Scope)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Todo.Scope)
-        </dd>
-
-        @*Danh sach comment*@
-        <dt class="col-sm-2">
-            @Html.LabelFor(model => model.Comments)
-        </dt>
-        <dd class="col-sm-10" style="height:300px;overflow: scroll">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th style="position: sticky; top: 0;">
-                            @Html.DisplayNameFor(model => model.Comments[0].Content)
-                        </th>
-                        <th style="position: sticky; top: 0;">
-                            @Html.DisplayNameFor(model => model.Comments[0].Created)
-                        </th>
-                        <th style="position: sticky; top: 0;">
-                            @Html.DisplayNameFor(model => model.Comments[0].CreatedBy)
-                        </th>
-                        <th style="position: sticky; top: 0;">
-                            @Html.DisplayNameFor(model => model.Comments[0].LastModified)
-                        </th>
-                        <th style="position: sticky; top: 0;">
-                            @Html.DisplayNameFor(model => model.Comments[0].LastModifiedBy)
-                        </th>
-                        <th style="position: sticky; top: 0;">
-                            <a asp-action="CreateComment" asp-route-id="@Model.Todo.Id">Thêm bình luận</a>
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Comments)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Content)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Created)
-                            </td>
-                            <td>
-                                <span>@Html.DisplayFor(modelItem => item.CreatedBy)</span>
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.LastModified)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.LastModifiedBy)
-                            </td>
-                            <td>
-                                @if (item.TodoId == Model.Todo.Id)
-                                {
-                                    <a asp-action="EditComment" asp-route-id="@item.Id">Edit</a>
-                                    <a asp-action="DeleteComment" asp-route-id="@item.Id">Delete</a>
-                                }
-                                else
-                                {
-
-                                }
-
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </dd>
-
-        @*Danh sach assignment*@
-        <dt class="col-sm-2">
-            @Html.LabelFor(model => model.Assignments)
-        </dt>
-        <dd class="col-sm-10" style="height:300px;overflow: scroll">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th style="position: sticky; top: 0;">
-                            @Html.DisplayNameFor(model => model.Assignments[0].UserId)
-                        </th>
-                        <th style="position: sticky; top: 0;">
-                            @Html.DisplayNameFor(model => model.Assignments[0].AssignmentDate)
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Assignments)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.UserId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.AssignmentDate)
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </dd>
-        @*Lich su chinh sua*@
-        <dt class="col-sm-2">
-            @Html.LabelFor(model => model.Histories)
-        </dt>
-        <dd class="col-sm-10" style="height:300px;overflow: scroll">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th style="position: sticky; top: 0;">
-                            @Html.DisplayNameFor(model => model.Histories[0].LogContent)
-                        </th>
-                        <th style="position: sticky; top: 0;">
-                            @Html.DisplayNameFor(model => model.Histories[0].LastModified)
-                        </th>
-                        <th style="position: sticky; top: 0;">
-                            @Html.DisplayNameFor(model => model.Histories[0].LastModifiedBy)
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Histories)
-                    {
-                        <tr>
-                            <td style="white-space: pre-line">
-                                @Html.DisplayFor(modelItem => item.LogContent)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.LastModified)
-                            </td>
-                            <td>
-                                <span>@Html.DisplayFor(modelItem => item.LastModifiedBy)</span>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </dd>
-    </dl>
+<div class="row m-3">
+    <div class="col-sm-2 font-weight-bold">
+        @Html.DisplayNameFor(model => model.Todo.Title)
+    </div>
+    <div class="col-sm-10">
+        @Html.DisplayFor(model => model.Todo.Title)
+    </div>
+    <div class="col-sm-2 font-weight-bold" ">
+        Ngày tạo
+    </div>
+    <div class="col-sm-10">
+        @Html.DisplayFor(model => model.Todo.Created)
+    </div>
+    <div class="col-sm-2 font-weight-bold" ">
+        @Html.DisplayNameFor(model => model.Todo.StartDate)
+    </div>
+    <div class="col-sm-10">
+        @Html.DisplayFor(model => model.Todo.StartDate)
+    </div>
+    <div class="col-sm-2 font-weight-bold" ">
+        @Html.DisplayNameFor(model => model.Todo.DueDate)
+    </div>
+    <div class="col-sm-10">
+        @Html.DisplayFor(model => model.Todo.DueDate)
+    </div>
+    <div class="col-sm-2 font-weight-bold" ">
+        @Html.DisplayNameFor(model => model.Todo.Content)
+    </div>
+    <div class="col-sm-10">
+        @Html.DisplayFor(model => model.Todo.Content)
+    </div>
+    <div class="col-sm-2 font-weight-bold" ">
+        @Html.DisplayNameFor(model => model.Todo.Status)
+    </div>
+    <div class="col-sm-10">
+        @Html.DisplayFor(model => model.Todo.Status)
+    </div>
+    <div class="col-sm-2 font-weight-bold" ">
+        @Html.DisplayNameFor(model => model.Todo.Scope)
+    </div>
+    <div class="col-sm-10">
+        @Html.DisplayFor(model => model.Todo.Scope)
+    </div>
 </div>
+
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-outline-info" href="javascript:void(0);" onclick="history.go(-1);">
+        <i class="fas fa-arrow-left"></i> Trở về
+    </a>
+</div>
+
+<hr />
+
+<ul class="nav nav-tabs">
+    <li class="active">
+        <a class="btn btn-light" data-toggle="tab" href="#comment">
+            Bình luận <span class="badge badge-info">@Model.Comments.Count</span>
+        </a>
+    </li>
+    <li>
+        <a class="btn btn-light" data-toggle="tab" href="#assignment">
+            Người làm chung <span class="badge badge-info">@Model.Assignments.Count</span>
+        </a>
+    </li>
+    <li>
+        <a class="btn btn-light" data-toggle="tab" href="#history">
+            Hoạt động <span class="badge badge-info">@Model.Histories.Count</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content min-vh-100">
+    <div id="comment" class="tab-pane fade in active">
+        @*Danh sach comment*@
+        <div class="container mt-5 mb-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <h3>
+                        Bình luận
+                        <a asp-action="CreateComment" asp-route-id="@Model.Todo.Id" class="btn btn-outline-primary float-right">
+                            <i class="fas fa-plus-square"></i> Thêm
+                        </a>
+                    </h3>
+                    <div class="m-2">
+                        @foreach (var item in Model.Comments)
+                        {
+
+                            <div class="p-3 bg-light border border-info">
+                                <div class="mb-15">
+                                    <a class="font-weight-bold mb-0" asp-route-id="@item.CreatedBy">@item.CreatedBy</a>
+                                    <span class="text-secondary float-right">@item.Created</span>
+                                </div>
+
+                                <p>
+                                    @item.Content
+                                </p>
+
+                                @*@if (item.CreatedBy == Model.Todo.CreatedBy)
+                                {*@
+                                    <a class="btn btn-outline-danger" asp-action="DeleteComment" asp-route-id="@item.Id">
+                                        <i class="fas fa-trash"></i> Xóa
+                                    </a>
+                                    <a class="btn btn-outline-warning" asp-action="EditComment" asp-route-id="@item.Id">
+                                        <i class="fas fa-edit"></i> Sửa
+                                    </a>
+                                @*}*@
+                            </div>
+
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="assignment" class="tab-pane fade">
+        @*Danh sach assignment*@
+        <div class="container mt-5 mb-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <h3>
+                        Người làm chung
+                        @if (Model.Todo.CreatedBy != null && ViewData["user"] != null && ViewData["user"].Equals(Model.Todo.CreatedBy))
+                        {
+                            <a class="btn btn-outline-primary float-right" asp-action="Edit" asp-route-id="@Model.Todo.Id">
+                                <i class="fas fa-pencil-alt"></i> Sửa
+                            </a>
+                        }
+                    </h3>
+                    <div class="m-2">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Mã nhân viên
+                                    </th>
+                                    <th>
+                                        Ngày tham gia
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Assignments)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.UserId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.AssignmentDate)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="history" class="tab-pane fade">
+        @*Lich su chinh sua*@
+        <div class="container mt-5 mb-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <h3>Hoạt động</h3>
+                    <ul class="timeline">
+                        @foreach (var item in Model.Histories)
+                        {
+                            <li>
+                                <a>@item.CreatedBy</a>
+                                <i class="float-right">@item.Created</i>
+                                <p>@item.LogContent</p>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

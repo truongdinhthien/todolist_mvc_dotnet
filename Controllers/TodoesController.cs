@@ -90,7 +90,7 @@ namespace TodoListMVC.Controllers
 
             return View();
         }
-        public async Task<IActionResult> CreateComment(int? id)
+        public IActionResult CreateComment(int? id)
         {
             var todos = _context.Todos.Select(t => new SelectListItem() {
                 Text = t.Title,
