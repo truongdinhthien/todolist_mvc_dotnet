@@ -12,7 +12,7 @@ namespace TodoListMVC.Data.Entities
         New,
         InProgress,
         Resolved,
-        OverDue
+        //OverDue
     }
 
     public enum TodoScope

@@ -15,7 +15,7 @@ namespace TodoListMVC.Extensions
                 case TodoStatus.New: return "primary";
                 case TodoStatus.InProgress: return "warning";
                 case TodoStatus.Resolved: return "success";
-                case TodoStatus.OverDue: return "danger";
+                //case TodoStatus.OverDue: return "danger";
             }
             return string.Empty;
         }

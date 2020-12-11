@@ -19,7 +19,7 @@
     <div class="form-row">
         <div class="form-group col-auto">
             <label asp-for="TodoStatusFilter" class="control-label"><b>Trạng thái</b></label>
-            <select asp-for="TodoStatusFilter" asp-items="Html.GetEnumSelectList<TodoStatus>()" class="form-control">
+            <select asp-for="TodoStatusFilter" asp-items="Html.GetEnumSelectList<TodoStatusVM>()" class="form-control">
                 <option selected="selected" value="">All</option>
             </select>
         </div>

@@ -27,13 +27,19 @@ namespace TodoListMVC.Controllers
             _fileStorageService = fileStorageService;
             _currentUserService = currentUserService;
         }
-        public async Task<IActionResult> Index(TodoStatus? todoStatusFilter,
+        public async Task<IActionResult> Index(TodoStatusVM? todoStatusFilter,
             DateTime? startDateFilter,
             DateTime? endDateFilter,
             int pageIndex = 1)
         {
-            var todoes = _context.Todos.Where(t =>
-                    (todoStatusFilter == null || t.Status == todoStatusFilter) &&
+            var todoes = _context.Todos
+                    .Where(t =>
+                    (t.Scope == TodoScope.Public || t.CreatedBy == _currentUserService.UserId 
+                     || t.Assignments.Any(a => a.UserId == _currentUserService.UserId && a.TodoId == t.Id)) &&
+                    ((todoStatusFilter == null || todoStatusFilter == TodoStatusVM.OverDue) ||
+                    (t.Status == (TodoStatus)todoStatusFilter)) &&
+                    ((todoStatusFilter == null || todoStatusFilter != TodoStatusVM.OverDue) ||
+                    (t.DueDate <= DateTime.Now)) &&
                     ((startDateFilter == null || endDateFilter == null) ||
                     (startDateFilter <= t.StartDate && t.StartDate <= endDateFilter))).AsQueryable();
 
@@ -86,7 +92,7 @@ namespace TodoListMVC.Controllers
         }
         public async Task<IActionResult> CreateComment(int? id)
         {
-            var todos =  _context.Todos.Select(t => new SelectListItem() {
+            var todos = _context.Todos.Select(t => new SelectListItem() {
                 Text = t.Title,
                 Value = t.Id.ToString(),
             }).ToList();
@@ -151,7 +157,7 @@ namespace TodoListMVC.Controllers
                         UserId = ele.ToString(),
                         AssignmentDate = DateTime.UtcNow
                     }).ToList();
-                }    
+                }
 
                 listAssignment.Add(new Assignment {
                     UserId = _currentUserService.UserId,
@@ -161,7 +167,7 @@ namespace TodoListMVC.Controllers
 
                 _context.Add(todo);
                 var successCreateTodo = await _context.SaveChangesAsync() > 0;
-                if(successCreateTodo)
+                if (successCreateTodo)
                 {
                     //Get user entity
                     //var currentUser = await _context.Users.FindAsync(_currentUserService.UserId);
@@ -171,7 +177,7 @@ namespace TodoListMVC.Controllers
                     };
                     _context.Add(todoHistory);
                     await _context.SaveChangesAsync();
-                }    
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(todoSaveModel);
@@ -250,7 +256,7 @@ namespace TodoListMVC.Controllers
             _context.Comments.Remove(comment);
             await _context.SaveChangesAsync();
             //return RedirectToAction(nameof(Details));
-            return RedirectToAction(nameof(Details), new { id = comment.TodoId} );
+            return RedirectToAction(nameof(Details), new { id = comment.TodoId });
         }
         public async Task<IActionResult> Edit(int? id)
         {
@@ -259,7 +265,7 @@ namespace TodoListMVC.Controllers
                 return NotFound();
             }
 
-            var todo = await _context.Todos.Include(t=>t.Assignments).FirstOrDefaultAsync(t => t.Id == id);
+            var todo = await _context.Todos.Include(t => t.Assignments).FirstOrDefaultAsync(t => t.Id == id);
             if (todo == null)
             {
                 return NotFound();
@@ -330,7 +336,7 @@ namespace TodoListMVC.Controllers
                         //var currentUser = await _context.Users.FindAsync(_currentUserService.UserId);
                         var LogContent = "";
 
-                        if(todo.Title != oldTodo.Title)
+                        if (todo.Title != oldTodo.Title)
                         {
                             LogContent += $"+ Sửa tiêu để từ {oldTodo.Title} thành {todo.Title} \n";
                         }
@@ -362,7 +368,7 @@ namespace TodoListMVC.Controllers
                         var newAssignmentUserString = await newListAssignments.ToUserStringAsync(_context);
                         var oldAssignmentUserString = await oldListAssignments.ToUserStringAsync(_context);
 
-                        if(newAssignmentUserString != oldAssignmentUserString)
+                        if (newAssignmentUserString != oldAssignmentUserString)
                         {
                             LogContent += $"+ Sửa thành viên từ {oldAssignmentUserString} thành {newAssignmentUserString} \n";
                         }
@@ -375,7 +381,7 @@ namespace TodoListMVC.Controllers
                             };
                             _context.Add(todoHistory);
                             await _context.SaveChangesAsync();
-                        }                            
+                        }
 
                     }
                 }
@@ -419,10 +425,10 @@ namespace TodoListMVC.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var todo = await _context.Todos.FindAsync(id);
-            if(todo.FileName != null)
+            if (todo.FileName != null)
             {
                 await _fileStorageService.DeleteFileAsync(todo.FileName);
-            }    
+            }
             _context.Todos.Remove(todo);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
