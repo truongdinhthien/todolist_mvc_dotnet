@@ -17,7 +17,7 @@
 
         @foreach (var item in Model.PrivateTodoes)
         {
-            <partial name="_Todo" model="item" />
+            <partial name="_TodoPartial" model="item" />
         }
     </div>
 
@@ -28,7 +28,7 @@
 
         @foreach (var item in Model.AssignedTodoes)
         {
-            <partial name="_Todo" model="item" />
+            <partial name="_TodoPartial" model="item" />
         }
     </div>
 
@@ -39,7 +39,7 @@
 
         @foreach (var item in Model.PublicTodoes)
         {
-            <partial name="_Todo" model="item" />
+            <partial name="_TodoPartial" model="item" />
         }
     </div>
 

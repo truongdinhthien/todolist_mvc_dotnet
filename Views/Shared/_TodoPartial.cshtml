@@ -1,7 +1,7 @@
 ﻿@model Todo
 
 @{
-    var style = "card mb-4 rounded";
+    var style = "card mb-4 ";
 
     if (Model.Status == TodoStatus.Resolved) style += "";
     if (Model.Status == TodoStatus.New) style += "shadow-sm border border-primary";
