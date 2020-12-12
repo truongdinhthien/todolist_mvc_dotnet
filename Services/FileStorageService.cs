@@ -32,7 +32,7 @@ namespace TodoListMVC.Services
 
         public string GetFileUrl(string fileName)
         {
-            return $"/{FILE_FOLDER_NAME}/{fileName}";
+            return $"https://localhost:44315/{FILE_FOLDER_NAME}/{fileName}";
         }
 
         public async Task<string> SaveFileAsync(IFormFile file)

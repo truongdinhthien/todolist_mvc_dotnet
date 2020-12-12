@@ -1,5 +1,10 @@
-﻿@model TodoDetailsModel
-
+﻿@using Microsoft.AspNetCore.Identity
+@using TodoListMVC.Shared.Constants
+@using System.Security.Claims
+@using TodoListMVC.Services 
+@model TodoDetailsModel
+@inject UserManager<User> UserManager
+@inject IFileStorageService File
 @{
     ViewData["Title"] = "Details";
 }
@@ -49,7 +54,7 @@
 
 <partial name="_TodoPartial" model="Model.Todo" />
 
-@if (Model.Todo.CreatedBy != null && ViewData["user"] != null && ViewData["user"].Equals(Model.Todo.CreatedBy))
+@if (this.User.IsInRole(Roles.Leader) || (Model.Todo.CreatedBy != null && ViewData["user"] != null && ViewData["user"].Equals(Model.Todo.CreatedBy)))
 {
     <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Todo.Id">
         <i class="fas fa-pencil-alt"></i> Sửa
@@ -66,41 +71,49 @@
     <div class="col-sm-10">
         @Html.DisplayFor(model => model.Todo.Title)
     </div>
-    <div class="col-sm-2 font-weight-bold" ">
+    <div class="col-sm-2 font-weight-bold">
         Ngày tạo
     </div>
     <div class="col-sm-10">
         @Html.DisplayFor(model => model.Todo.Created)
     </div>
-    <div class="col-sm-2 font-weight-bold" ">
+    <div class="col-sm-2 font-weight-bold">
         @Html.DisplayNameFor(model => model.Todo.StartDate)
     </div>
     <div class="col-sm-10">
         @Html.DisplayFor(model => model.Todo.StartDate)
     </div>
-    <div class="col-sm-2 font-weight-bold" ">
+    <div class="col-sm-2 font-weight-bold">
         @Html.DisplayNameFor(model => model.Todo.DueDate)
     </div>
     <div class="col-sm-10">
         @Html.DisplayFor(model => model.Todo.DueDate)
     </div>
-    <div class="col-sm-2 font-weight-bold" ">
+    <div class="col-sm-2 font-weight-bold">
         @Html.DisplayNameFor(model => model.Todo.Content)
     </div>
     <div class="col-sm-10">
         @Html.DisplayFor(model => model.Todo.Content)
     </div>
-    <div class="col-sm-2 font-weight-bold" ">
+    <div class="col-sm-2 font-weight-bold">
         @Html.DisplayNameFor(model => model.Todo.Status)
     </div>
     <div class="col-sm-10">
         @Html.DisplayFor(model => model.Todo.Status)
     </div>
-    <div class="col-sm-2 font-weight-bold" ">
+    <div class="col-sm-2 font-weight-bold">
         @Html.DisplayNameFor(model => model.Todo.Scope)
     </div>
     <div class="col-sm-10">
         @Html.DisplayFor(model => model.Todo.Scope)
+    </div>
+    <div class="col-sm-2 font-weight-bold">
+        @Html.DisplayNameFor(model => model.Todo.FileName)
+    </div>
+    <div class="col-sm-10">
+        <a target="_blank" href="@File.GetFileUrl(Model.Todo.FileName)">
+            @Html.DisplayFor(model => model.Todo.FileName)
+        </a>
     </div>
 </div>
 
@@ -138,17 +151,23 @@
                 <div class="col-md-6 offset-md-3">
                     <h3>
                         Bình luận
-                        <a asp-action="CreateComment" asp-route-id="@Model.Todo.Id" class="btn btn-outline-primary float-right">
+                        <a class="btn btn-outline-primary float-right" asp-action="CreateComment" asp-route-id="@Model.Todo.Id">
                             <i class="fas fa-plus-square"></i> Thêm
                         </a>
                     </h3>
+
                     <div class="m-2">
                         @foreach (var item in Model.Comments)
                         {
 
                             <div class="p-3 bg-light border border-info">
                                 <div class="mb-15">
-                                    <a class="font-weight-bold mb-0" asp-route-id="@item.CreatedBy">@item.CreatedBy</a>
+                                    <p class="font-weight-bold mb-0">
+                                        @{
+                                            var user = await UserManager.FindByIdAsync(@item.CreatedBy);
+                                            @user?.UserName
+                                        }
+                                    </p>
                                     <span class="text-secondary float-right">@item.Created</span>
                                 </div>
 
@@ -156,15 +175,15 @@
                                     @item.Content
                                 </p>
 
-                                @*@if (item.CreatedBy == Model.Todo.CreatedBy)
-                                {*@
+                                @if (this.User.IsInRole(Roles.Leader) || this.User.FindFirstValue(ClaimTypes.NameIdentifier) == item.CreatedBy)
+                                {
                                     <a class="btn btn-outline-danger" asp-action="DeleteComment" asp-route-id="@item.Id">
                                         <i class="fas fa-trash"></i> Xóa
                                     </a>
                                     <a class="btn btn-outline-warning" asp-action="EditComment" asp-route-id="@item.Id">
                                         <i class="fas fa-edit"></i> Sửa
                                     </a>
-                                @*}*@
+                                }
                             </div>
 
                         }
@@ -179,15 +198,7 @@
         <div class="container mt-5 mb-5">
             <div class="row">
                 <div class="col-md-6 offset-md-3">
-                    <h3>
-                        Người làm chung
-                        @if (Model.Todo.CreatedBy != null && ViewData["user"] != null && ViewData["user"].Equals(Model.Todo.CreatedBy))
-                        {
-                            <a class="btn btn-outline-primary float-right" asp-action="Edit" asp-route-id="@Model.Todo.Id">
-                                <i class="fas fa-pencil-alt"></i> Sửa
-                            </a>
-                        }
-                    </h3>
+                    <h3>Người làm chung</h3>
                     <div class="m-2">
                         <table class="table">
                             <thead>
@@ -232,7 +243,12 @@
                         @foreach (var item in Model.Histories)
                         {
                             <li>
-                                <a>@item.CreatedBy</a>
+                                <kbd>
+                                    @{
+                                        var user = await UserManager.FindByIdAsync(@item.CreatedBy);
+                                        @user?.UserName
+                                    }
+                                </kbd>
                                 <i class="float-right">@item.Created</i>
                                 <p>@item.LogContent</p>
                             </li>

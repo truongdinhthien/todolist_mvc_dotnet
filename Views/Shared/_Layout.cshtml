@@ -29,17 +29,17 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Todoes" asp-action="Index">Quản lý công việc</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Todoes" asp-action="Index">Công việc</a>
                         </li>
- @if (SignInManager.IsSignedIn(this.User) && this.User.IsInRole(Roles.Leader))
- {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Staffs">Quản lý nhân viên</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Leaders">Quản lý lãnh đạo</a>
-                        </li>
-}
+                        @if (SignInManager.IsSignedIn(this.User) && this.User.IsInRole(Roles.Leader))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Staffs">Nhân viên</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Leaders">Lãnh đạo</a>
+                            </li>
+                        }
 
                     </ul>
                     <partial name="_LoginPartial" />

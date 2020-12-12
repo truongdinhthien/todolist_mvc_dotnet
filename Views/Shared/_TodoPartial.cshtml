@@ -44,16 +44,16 @@
         <small>
             <span>
                 Tạo bởi
-                <a asp-controller="" asp-action="" asp-route-id="@Model.CreatedBy">
+                <kbd>
                     @{
                         var user = await UserManager.FindByIdAsync(@Model.CreatedBy);
                         @user?.UserName
                     }
-                </a>
+                </kbd>
             </span>
 
             <span class="hidden">
-                lúc <mark>@Model.Created</mark> <br />
+                 lúc <mark>@Model.Created</mark> <br />
                 Bắt đầu: <mark>@Model.StartDate</mark>
             </span>
             <br />

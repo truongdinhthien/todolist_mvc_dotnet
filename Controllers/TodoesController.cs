@@ -13,6 +13,7 @@ using TodoListMVC.Services;
 using TodoListMVC.Shared;
 using TodoListMVC.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace TodoListMVC.Controllers
 {
@@ -36,7 +37,7 @@ namespace TodoListMVC.Controllers
         {
             var todoes = _context.Todos
                     .Where(t =>
-                    (t.Scope == TodoScope.Public || t.CreatedBy == _currentUserService.UserId 
+                    (User.FindFirstValue(ClaimTypes.Role) == "leader" || t.Scope == TodoScope.Public || t.CreatedBy == _currentUserService.UserId 
                      || t.Assignments.Any(a => a.UserId == _currentUserService.UserId && a.TodoId == t.Id)) &&
                     ((todoStatusFilter == null || todoStatusFilter == TodoStatusVM.OverDue) ||
                     (t.Status == (TodoStatus)todoStatusFilter)) &&
@@ -45,7 +46,7 @@ namespace TodoListMVC.Controllers
                     ((startDateFilter == null || endDateFilter == null) ||
                     (startDateFilter <= t.StartDate && t.StartDate <= endDateFilter))).AsQueryable();
 
-            var page = await PaginatedList<Todo>.CreateAsync(todoes, pageIndex, 2);
+            var page = await PaginatedList<Todo>.CreateAsync(todoes, pageIndex, 3);
 
             var todoViewModel = new TodoViewModel {
                 Todoes = page,
@@ -84,7 +85,7 @@ namespace TodoListMVC.Controllers
         public async Task<IActionResult> Create()
         {
             var listUser = await _context.Users.Distinct().ToListAsync();
-            var selectListUser = listUser.Select(u => new SelectListItem() {
+            var selectListUser = listUser.Where(l => l.Id != _currentUserService.UserId).Select(u => new SelectListItem() {
                 Text = u.UserName,
                 Value = u.Id,
             });
@@ -260,6 +261,7 @@ namespace TodoListMVC.Controllers
             //return RedirectToAction(nameof(Details));
             return RedirectToAction(nameof(Details), new { id = comment.TodoId });
         }
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
